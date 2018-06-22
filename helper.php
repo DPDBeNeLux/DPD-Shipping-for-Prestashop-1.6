@@ -56,6 +56,7 @@ class DpdHelper
 		$helperForm->fields_value['place'] = Configuration::get('dpdbenelux_place');
 		$helperForm->fields_value['country'] = Configuration::get('dpdbenelux_country');
 		$helperForm->fields_value['environment'] = Configuration::get('dpdbenelux_environment');
+		$helperForm->fields_value['google_api_key'] = Configuration::get('PS_API_KEY');
 
 		return $helperForm->generateForm($fields_form);
 
