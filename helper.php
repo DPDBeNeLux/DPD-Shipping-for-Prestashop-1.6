@@ -88,6 +88,7 @@ class DpdHelper
 			$tab->id_parent = -1;
 			$tab->module = self::MODULENAME;
 			$tab->name = array();
+
 			foreach (Language::getLanguages(true) as $lang) {
 				$tab->name[$lang['id_lang']] = $userReadableName;
 			}
@@ -96,23 +97,4 @@ class DpdHelper
 		return true;
 	}
 
-	public function cacheGeoData($parcelPredict, $params, $cookie)
-	{
-		$cookie->address = serialize(
-			array(
-				'postcode' => $params['address']->postcode,
-				'city' => $params['address']->city
-			)
-		);
-
-		$geoData = $parcelPredict->getGeoData($params['address']->postcode, $params['address']->city);
-		$parcelShops = $parcelPredict->getParcelShops($params['address']->postcode, $params['address']->city);
-//		var_dump($parcelShops); die;
-		$cookie->geoData = serialize($geoData);
-		$cookie->parcelShops = base64_encode(json_encode($parcelShops));
-//		var_dump(($cookie->parcelShops)); die;
-
-
-		unset($cookie->parcelId);
-	}
 }

@@ -64,7 +64,7 @@ class DpdLabelGenerator
 
 						if(empty($this->errors)) {
 							try {
-								$label = $this->dpdClient->genereateLabel($shipmentInfo, Configuration::get('dpdbenelux_delis_id'), Configuration::get('dpdbenelux_acces_token'));
+								$label = $this->dpdClient->generateLabel($shipmentInfo, Configuration::get('dpdbenelux_delis_id'), Configuration::get('dpdbenelux_acces_token'));
 								$mpsId = $label->shipmentResponses->mpsId;
 								$labelNumbers = $label->shipmentResponses->parcelInformation;
 								$pdf = $label->parcellabelsPDF;

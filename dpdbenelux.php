@@ -26,7 +26,7 @@ class DPDBenelux extends Module
 
 	private $ownControllers = array(
 		'AdminDpdLabels' => 'DPD label',
-		'AdminDpdShippingList' => 'DPD ShippingList'
+		'AdminDpdShippingList' => 'DPD ShippingList',
 	);
 	private $hooks = array(
 		'displayAdminOrderTabOrder',
@@ -37,7 +37,7 @@ class DPDBenelux extends Module
         'displayOrderConfirmation',
 		'displayBeforeCarrier',
 		'actionValidateOrder',
-
+		'displayFooter',
 	);
 
 	public function loadHelper()
@@ -137,6 +137,8 @@ class DPDBenelux extends Module
 		}
 		else
 		{
+			$tab = new Tab();
+			$tab->disablingForModule('dpdbenelux');
 			$this->dpdCarrier->deleteCarriers();
 			Configuration::updateValue('dpd', 'not installed');
 			return true;
@@ -338,44 +340,12 @@ class DPDBenelux extends Module
 		}
 
 	}
-
-
-	public function hookDisplayCarrierList($params)
-	{
-		if ($params['cart']->id_carrier == $this->dpdCarrier->getLatestCarrierByReferenceId(Configuration::get("dpdbenelux_parcelshop"))) {
-			$geoData = $this->dpdParcelPredict->getGeoData($params['address']->postcode, $params['address']->city);
-			$parcelShops = $this->dpdParcelPredict->getParcelShops($params['address']->postcode, $params['address']->city);
-		}
-
-		$this->context->controller->addCSS(_PS_MODULE_DIR_ . 'dpdbenelux' . DS . 'views' . DS . 'css' . DS . 'dpdLocator.css');
-		$this->context->smarty->assign(
-			array(
-				'parcelshopId' => $this->dpdCarrier->getLatestCarrierByReferenceId(Configuration::get("dpdbenelux_parcelshop")),
-				'sender' => $params['cart']->id_carrier,
-				'key' => Configuration::get('PS_API_KEY'),
-				'longitude' => $geoData['longitude'],
-				'latitude' => $geoData['latitude'],
-				'parcelshops' => $parcelShops,
-				'saturdaySenderIsAllowed' => (int)$this->dpdCarrier->checkIfSaturdayAllowed(),
-				'saturdaySender' => (int)$this->dpdCarrier->getLatestCarrierByReferenceId(Configuration::get("dpdbenelux_saturday")),
-				'classicSaturdaySender' => (int)$this->dpdCarrier->getLatestCarrierByReferenceId(Configuration::get("dpdbenelux_classic_saturday")),
-				'cookieParcelId' => $this->context->cookie->parcelId,
-			)
-		);
-
-		return $this->display(__FILE__, '_dpdLocator.tpl');
-
-	}
-
-
 	public function hookActionCarrierProcess($params)
 	{
 	     //this adds parcel-id to the coockie when the carrier is used
 	    if((int)$params['cart']->id_carrier === (int)$this->dpdCarrier->getLatestCarrierByReferenceId(Configuration::get("dpdbenelux_parcelshop"))){
-	        if(!empty($_POST['parcel-id']) && !($_POST['parcel-id'] == '')) {
-				$this->context->cookie->parcelId = $_POST['parcel-id'];
-            }else{
-	            $this->context->controller->errors[] = $this->l('Please select a parcelshop');
+			if(empty($this->context->cookie->parcelId) && ($this->context->cookie->parcelId == '')) {
+				$this->context->controller->errors[] = $this->l('Please select a parcelshop');
             }
         }
 	}
@@ -394,6 +364,21 @@ class DPDBenelux extends Module
 			}
         }
     }
+
+    public function hookDisplayFooter($params)
+	{
+		$this->context->smarty->assign(
+			array(
+				'parcelshopId' => $this->dpdCarrier->getLatestCarrierByReferenceId(Configuration::get("dpdbenelux_parcelshop")),
+				'sender' => $params['cart']->id_carrier,
+				'saturdaySenderIsAllowed' => (int)$this->dpdCarrier->checkIfSaturdayAllowed(),
+				'saturdaySender' => (int)$this->dpdCarrier->getLatestCarrierByReferenceId(Configuration::get("dpdbenelux_saturday")),
+				'classicSaturdaySender' => (int)$this->dpdCarrier->getLatestCarrierByReferenceId(Configuration::get("dpdbenelux_classic_saturday")),
+				'cookieParcelId' => $this->context->cookie->parcelId,
+			)
+		);
+		return $this->display(__FILE__, '_dpdVariables.tpl');
+	}
 
 
 }

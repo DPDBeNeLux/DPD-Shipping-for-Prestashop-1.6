@@ -17,9 +17,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
+require_once (_PS_MODULE_DIR_ . 'dpdbenelux' . DS . 'classes' . DS . 'DpdParcelPredict.php');
 class dpdbeneluxOneStepParcelshopModuleFrontController extends ModuleFrontController
 {
+
+	public $dpdParcelPredict;
+
+	public function __construct()
+	{
+		$this->dpdParcelPredict = new DpdParcelPredict();
+		parent::__construct();
+	}
+
 
 	public function initContent()
 	{
@@ -29,8 +38,20 @@ class dpdbeneluxOneStepParcelshopModuleFrontController extends ModuleFrontContro
 				$this->context->cookie->parcelId = $parcelId;
 				die($this->context->cookie->parcelId);
 			}
+		}elseif(Tools::getValue('method') === 'getParcelShops'){
+			$address = new Address($this->context->cart->id_address_delivery);
+			$country = new Country($address->id_country);
+			$isoCode = $country->iso_code;
+
+			$geoData = $this->dpdParcelPredict->getGeoData($address->postcode, $isoCode);
+			$parcelShops = $this->dpdParcelPredict->getParcelShops($address->postcode, $isoCode);
+
+			die(Tools::jsonEncode(
+				array( 'parcelShops' => $parcelShops,
+						'geoData' => $geoData
+			)));
 		}
-		die($this->context->cookie->parcelId);
+
 
 	}
 

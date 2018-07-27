@@ -56,14 +56,13 @@ class DpdClient
 		];
 	}
 
-	public function genereateLabel($shippingInfo, $delisId, $accessToken)
+	public function generateLabel($shippingInfo, $delisId, $accessToken)
 	{
 		$soapHeaderBody = array(
 			'delisId' => $delisId,
 			'authToken' => $accessToken,
 			'messageLanguage' => 'nl_NL'
 			);
-
 			$header = new SOAPHeader(self::DPD_AUTH_URL, 'authentication', $soapHeaderBody, false);
 			$client = $this->getSoapClient($this->getUrl(self::DPD_SHIPMENT_SERVICE_URL));
 
@@ -133,7 +132,7 @@ class DpdClient
 		$header = new SoapHeader(self::DPD_AUTH_URL, 'authentication', $soapHeaderBody);
 		$soapClient->__setSoapHeaders($header);
 		try {
-			return json_encode($soapClient->__soapCall('findParcelShopsByGeoData', array($parameters)));
+			return $soapClient->__soapCall('findParcelShopsByGeoData', array($parameters));
 		}catch(Exception $e){
 			//TODO create log that there is a soap fault.
 		}
