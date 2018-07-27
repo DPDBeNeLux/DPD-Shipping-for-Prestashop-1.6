@@ -236,5 +236,15 @@ class DpdCarrier extends CarrierModule
 	}
 
 
+	public function checkIfCarrierIsDpd($carrierId)
+	{
+		$dpdCarrierIds = array();
+		foreach ($this->carrierNames as $prefix => $info) {
+			$dpdCarrierIds[] =  Configuration::get($this->dpdPrefix . strtolower($prefix));
+		}
+		return in_array($carrierId, $dpdCarrierIds);
+	}
+
+
 
 }

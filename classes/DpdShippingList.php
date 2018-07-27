@@ -54,10 +54,10 @@ class DpdShippingList
 				$labelNumbersAndWeightUnserialized = unserialize($labelNumbersAndWeight['label_nummer']);
 
 
-				foreach($labelNumbersAndWeightUnserialized as $labelNumberAndWeight)
+				foreach($labelNumbersAndWeightUnserialized as $labelNumber)
 				{
-					$parcelLabelNumber = $labelNumberAndWeight->parcelLabelNumber;
-					$weight = $labelNumberAndWeight->weight;
+					$parcelLabelNumber = $labelNumber;
+
 
 					$tempCustomer = new Customer($order->id_customer);
 					$tempAddres = new Address($order->id_address_delivery);

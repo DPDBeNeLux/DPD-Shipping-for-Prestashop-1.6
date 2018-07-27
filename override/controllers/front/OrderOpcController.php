@@ -82,5 +82,11 @@ class OrderOpcController extends OrderOpcControllerCore
 	}
 
 
-	
+	public function setMedia()
+	{
+		parent::setMedia();
+		$this->addJS(_PS_MODULE_DIR_ . 'dpdbenelux' . DS . 'views' . DS  . 'js' . DS . 'dpdLocator.js');
+		$this->addCSS(_PS_MODULE_DIR_ . 'dpdbenelux' . DS . 'views' . DS  . 'css' . DS . 'dpdLocator.css');
+		$this->addJS('https://maps.googleapis.com/maps/api/js?key=' . Configuration::get('PS_API_KEY'));
+	}
 }
